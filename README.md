@@ -1,73 +1,95 @@
-# React + TypeScript + Vite
+# 📑 Apex DEX | Documentation Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<div align="center">
+  <img src="public/logo.png" width="120" height="120" alt="Apex Logo" />
+  <h3>The central source of truth for Apex Protocol architecture, guides, and integration details.</h3>
+  
+  [![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
+  [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+  [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+</div>
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌟 Overview
 
-## React Compiler
+**Apex DEX Documentation** is a standalone web application built to provide a high-fidelity, interactive documentation experience. It serves as the primary resource for developers and users to understand the internal workings of the Apex Protocol.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Key Features:
+- **Interactive Architecture Diagrams**: Visual representations of the Frontend-Indexer-Blockchain bridge.
+- **Smart Contract Directory**: Real-time access to deployed contract addresses on Sepolia Testnet.
+- **Modern UI/UX**: Built with React and Tailwind CSS v4 for a premium, fast-loading experience.
+- **Modular Design**: Each documentation section is a standalone React component for easy maintenance.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠 Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **Frontend**: React (Vite)
+- **Styling**: Tailwind CSS v4 (PostCSS)
+- **Icons**: Lucide React
+- **Animation**: Framer Motion
+- **Navigation**: React Router DOM (v7 components)
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🚀 Getting Started
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) (v18+)
+- [Yarn](https://yarnpkg.com/)
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/Apex-DEX/apex-dex-docs.git
+
+# Enter the directory
+cd apex-dex-docs
+
+# Install dependencies
+yarn install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Development
+```bash
+yarn dev
 ```
+
+### Build
+```bash
+yarn build
+```
+
+---
+
+## 📂 Project Structure
+
+```text
+apex-dex-docs/
+├── src/
+│   ├── components/       # Reusable UI components (Header, Sidebar)
+│   ├── components/Sections/ # Documentation content split by sections
+│   ├── config/           # Application configuration and constants
+│   ├── App.tsx           # Main routing and layout logic
+│   └── main.tsx          # Entry point
+├── public/               # Static assets (Logo, Icons)
+├── tailwind.config.js    # Tailwind configuration
+└── .env                  # Environment variables
+```
+
+---
+
+## 🌍 Ecosystem Links
+
+- **[Apex DEX App](https://apex-dex.onrender.com)**
+- **[Apex Backend](https://github.com/Apex-DEX/apex-dex-backend)**
+- **[Apex Indexer](https://github.com/Apex-DEX/apex-dex-indexer)**
+- **[Apex Contracts](https://github.com/Apex-DEX/apex-dex-contracts)**
+
+---
+
+<div align="center">
+  <p>Built with 💜 by Apex Team</p>
+</div>
