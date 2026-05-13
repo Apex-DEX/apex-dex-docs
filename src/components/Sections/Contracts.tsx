@@ -203,34 +203,70 @@ export function Contracts() {
         ))}
       </div>
 
-      {/* Bootstrap Script Section */}
-      <div className="bg-[#131A2A] border border-white/5 rounded-3xl p-8 relative overflow-hidden group">
-        <div className="absolute top-[-20%] right-[-10%] w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px] group-hover:bg-blue-500/10 transition-all duration-1000"></div>
-        
-        <div className="flex flex-col md:flex-row gap-8 items-center relative z-10">
-          <div className="w-20 h-20 rounded-2xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-            <Code2 className="w-10 h-10 text-blue-400" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-white mb-2">Automated Ecosystem Bootstrapping</h3>
-            <p className="text-sm text-gray-400 leading-relaxed mb-6">
-              All pairs and their initial liquidity were seeded using our custom Foundry script. This script automates the deployment of pairs, approval of tokens, and addition of liquidity with pre-defined anchor prices.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <a 
-                href="https://github.com/Apex-DEX/apex-dex-contracts/blob/main/script/BootstrapAllPairsAndLiquidity.s.sol" 
-                target="_blank" 
-                rel="noreferrer"
-                className="px-5 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-xl text-sm font-bold border border-blue-500/20 transition-all flex items-center gap-2"
-              >
-                View Bootstrap Script <ExternalLink className="w-4 h-4" />
-              </a>
-              <div className="px-5 py-2.5 bg-white/5 rounded-xl text-xs font-mono text-gray-500 border border-white/5 flex items-center">
-                path: script/BootstrapAllPairsAndLiquidity.s.sol
+      </div>
+
+      {/* Detailed Contract Logic */}
+      <div className="space-y-16 mt-24">
+        <section>
+          <h2 className="text-3xl font-bold text-white mb-8 border-b border-white/5 pb-4">1. Automated Market Maker (AMM) Logic</h2>
+          <div className="grid md:grid-cols-2 gap-12">
+            <div className="p-8 bg-[#131A2A]/40 border border-white/5 rounded-3xl">
+              <h4 className="text-pink-400 font-bold uppercase tracking-widest text-xs mb-4">The Constant Product Formula</h4>
+              <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                Every Apex Pair follows the formula <code>x * y = k</code>. When a swap occurs, the product <code>k</code> must remain constant (excluding fees). This ensures that as the supply of one token decreases, its price relative to the other token increases exponentially.
+              </p>
+              <div className="bg-black/20 p-4 rounded-xl font-mono text-[11px] text-gray-500 border border-white/5">
+                uint amountInWithFee = amountIn * 997; <br/>
+                uint numerator = amountInWithFee * reserveOut; <br/>
+                uint denominator = (reserveIn * 1000) + amountInWithFee; <br/>
+                amountOut = numerator / denominator;
               </div>
             </div>
+            <div className="space-y-6">
+              <h4 className="text-purple-400 font-bold uppercase tracking-widest text-xs">Deterministic Addressing</h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                The <strong>Factory</strong> uses the <code>CREATE2</code> opcode to deploy pairs. This allows the Pair address to be pre-calculated off-chain using only the token addresses and the Factory's unique <code>INIT_CODE_HASH</code>.
+              </p>
+              <h4 className="text-blue-400 font-bold uppercase tracking-widest text-xs">Liquidity Tokens (LP)</h4>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                When liquidity is added, the Pair contract mints <strong>Apex-LP</strong> tokens. These tokens represent the user's share of the pool and are required to withdraw the underlying assets later.
+              </p>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section>
+          <h2 className="text-3xl font-bold text-white mb-8 border-b border-white/5 pb-4">2. Router Safety Mechanisms</h2>
+          <div className="bg-linear-to-r from-purple-900/10 to-transparent p-10 border border-purple-500/10 rounded-[2.5rem]">
+             <div className="grid md:grid-cols-3 gap-8 text-sm leading-relaxed text-gray-400">
+                <div className="space-y-3">
+                   <div className="font-bold text-white uppercase tracking-tighter">Deadline Checks</div>
+                   <p className="text-xs">Every transaction includes a <code>deadline</code> timestamp. If the network is congested and the TX takes too long, the Router reverts it to protect the user from stale prices.</p>
+                </div>
+                <div className="space-y-3 border-l border-white/5 pl-8">
+                   <div className="font-bold text-white uppercase tracking-tighter">Slippage Protection</div>
+                   <p className="text-xs">Users specify an <code>amountOutMin</code>. The Router verifies the final output after the swap; if it's lower than requested, the transaction fails.</p>
+                </div>
+                <div className="space-y-3 border-l border-white/5 pl-8">
+                   <div className="font-bold text-white uppercase tracking-tighter">Multi-hop Routing</div>
+                   <p className="text-xs">The Router can execute trades across multiple pools in a single transaction (e.g., USDT → WETH → WBTC) to find the best price.</p>
+                </div>
+             </div>
+          </div>
+        </section>
+
+        <section className="pb-12">
+          <h2 className="text-3xl font-bold text-white mb-8 border-b border-white/5 pb-4">3. Oracle Capabilities</h2>
+          <div className="p-8 bg-[#131A2A] border border-white/5 rounded-3xl">
+             <p className="text-gray-400 text-sm leading-relaxed mb-6">
+                Apex Pair contracts maintain <strong>Cumulative Prices</strong>. This allows external protocols to build Time-Weighted Average Price (TWAP) oracles, which are highly resistant to flash-loan price manipulation attacks.
+             </p>
+             <div className="flex gap-4">
+                <div className="px-4 py-2 bg-white/5 rounded-lg text-[10px] font-mono text-gray-500 uppercase border border-white/5">price0CumulativeLast</div>
+                <div className="px-4 py-2 bg-white/5 rounded-lg text-[10px] font-mono text-gray-500 uppercase border border-white/5">price1CumulativeLast</div>
+             </div>
+          </div>
+        </section>
       </div>
     </div>
   )

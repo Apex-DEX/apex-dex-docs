@@ -107,63 +107,74 @@ export function Architecture() {
         </div>
       </div>
 
-      {/* Component Breakdown Cards */}
-      <div className="grid md:grid-cols-2 gap-8">
-        <div className="p-8 bg-[#131A2A] border border-white/5 rounded-3xl relative group overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Activity className="w-20 h-20 text-red-500" />
-          </div>
-          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
-             <Activity className="w-5 h-5 text-red-400" /> Redis Cluster
-          </h3>
-          <p className="text-gray-400 text-sm leading-relaxed mb-6">
-            The backbone of our performance layer. It manages two separate databases:
-          </p>
-          <ul className="space-y-4 text-xs">
-            <li className="flex gap-4">
-              <span className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center font-bold text-red-400">1</span>
-              <div>
-                <p className="text-white font-bold mb-1 uppercase tracking-tighter">Cache DB</p>
-                <p className="text-gray-500 italic">Stores frequently accessed chart data and token lists to bypass expensive SQL queries.</p>
-              </div>
-            </li>
-            <li className="flex gap-4">
-              <span className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center font-bold text-red-400">2</span>
-              <div>
-                <p className="text-white font-bold mb-1 uppercase tracking-tighter">BullMQ DB</p>
-                <p className="text-gray-500 italic">Manages background job queues for transaction verification and data syncing.</p>
-              </div>
-            </li>
-          </ul>
-        </div>
+      </div>
 
-        <div className="p-8 bg-[#131A2A] border border-white/5 rounded-3xl relative group overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Code2 className="w-20 h-20 text-blue-500" />
+      {/* Detailed Technical Breakdown */}
+      <div className="space-y-16 mt-24">
+        <section className="relative">
+          <div className="absolute -left-4 top-0 w-1 h-full bg-linear-to-b from-purple-500/50 to-transparent rounded-full"></div>
+          <h2 className="text-3xl font-bold text-white mb-8 px-2">1. Lifecycle of a Trade Data Request</h2>
+          <div className="grid md:grid-cols-2 gap-12">
+            <div className="space-y-8">
+              <div className="bg-[#131A2A]/40 border border-white/5 p-6 rounded-2xl">
+                <h4 className="text-purple-400 font-bold uppercase tracking-widest text-[10px] mb-3">Phase A: Event Emission</h4>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  The process starts when a user calls <code>swap()</code> on an <strong>Apex Pair</strong> contract. The EVM executes the constant product formula and emits a <code>Swap</code> event containing the sender, amounts in/out, and the recipient.
+                </p>
+              </div>
+              <div className="bg-[#131A2A]/40 border border-white/5 p-6 rounded-2xl">
+                <h4 className="text-blue-400 font-bold uppercase tracking-widest text-[10px] mb-3">Phase B: Indexing & Enrichment</h4>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  The <strong>Go Indexer</strong> picks up the event via its WebSocket subscription. It immediately fetches the <code>tokenPrice</code> by querying other pools (e.g., ETH/USDT) to assign a USD value to the swap. This processed record is then pushed to <strong>PostgreSQL</strong>.
+                </p>
+              </div>
+            </div>
+            <div className="space-y-8">
+              <div className="bg-[#131A2A]/40 border border-white/5 p-6 rounded-2xl">
+                <h4 className="text-amber-400 font-bold uppercase tracking-widest text-[10px] mb-3">Phase C: Query & Cache Layer</h4>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  When a user views the pool page, the <strong>Frontend</strong> requests OHLC (candlestick) data. The <strong>Nest.js API</strong> first checks <strong>Redis Cache</strong> using a unique key (e.g., <code>bars_USDT_USDC_1h</code>). On a hit, response time is <strong>&lt;5ms</strong>. On a miss, it aggregates 3600+ seconds of swaps from SQL, caches the result, and returns it.
+                </p>
+              </div>
+              <div className="bg-[#131A2A]/40 border border-white/5 p-6 rounded-2xl">
+                <h4 className="text-emerald-400 font-bold uppercase tracking-widest text-[10px] mb-3">Phase D: Visual Rendering</h4>
+                <p className="text-gray-400 text-sm leading-relaxed">
+                  The JSON payload is parsed by the client-side <strong>Datafeed</strong> and rendered into interactive charts using <strong>Lightweight Charts</strong> or <strong>Recharts</strong>, providing the trader with instant market insight.
+                </p>
+              </div>
+            </div>
           </div>
-          <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
-             <Code2 className="w-5 h-5 text-blue-400" /> Go Indexer Service
-          </h3>
-          <p className="text-gray-400 text-sm leading-relaxed mb-6">
-            A standalone high-performance service dedicated to blockchain observation:
-          </p>
-          <ul className="space-y-4 text-xs">
-             <li className="flex gap-4">
-                <span className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center font-bold text-blue-400">1</span>
-                <div>
-                   <p className="text-white font-bold mb-1 uppercase tracking-tighter">Real-time Capture</p>
-                   <p className="text-gray-500 italic">Subscribes to contract events via WebSocket to capture trades instantly.</p>
-                </div>
-             </li>
-             <li className="flex gap-4">
-                <span className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center font-bold text-blue-400">2</span>
-                <div>
-                   <p className="text-white font-bold mb-1 uppercase tracking-tighter">Batch Persistence</p>
-                   <p className="text-gray-500 italic">Optimized SQL driver for fast persistence of thousands of events per second.</p>
-                </div>
-             </li>
-          </ul>
-        </div>
+        </section>
+
+        <section className="p-10 bg-linear-to-br from-red-500/5 to-transparent border border-red-500/10 rounded-[2.5rem]">
+          <div className="flex items-center gap-4 mb-8">
+            <Activity className="w-8 h-8 text-red-500" />
+            <h2 className="text-2xl font-bold text-white">The Redis Performance Engine</h2>
+          </div>
+          <div className="grid lg:grid-cols-2 gap-12 text-sm leading-relaxed text-gray-400">
+            <div>
+              <h3 className="text-white font-bold mb-4 uppercase tracking-tighter">Strategic Caching</h3>
+              <p className="mb-4">
+                To prevent database exhaustion during peak trading, we use a <strong>Write-Around</strong> caching strategy. Heavy analytical queries (TVL, APR, Volume) are computed once every 60 seconds by a background worker and stored in Redis.
+              </p>
+              <div className="p-4 bg-black/20 rounded-xl font-mono text-[11px] border border-white/5">
+                <span className="text-blue-400">GET</span> pool_stats_all <br/>
+                <span className="text-gray-500"># Returns pre-aggregated JSON from Redis</span>
+              </div>
+            </div>
+            <div>
+              <h3 className="text-white font-bold mb-4 uppercase tracking-tighter">Reliable Background Jobs</h3>
+              <p className="mb-4">
+                Using <strong>BullMQ</strong>, we ensure that critical tasks—like re-indexing a missed block or triggering a price alert—are never lost. Redis acts as the message broker, tracking every job's status and handling automatic retries.
+              </p>
+              <div className="flex gap-3">
+                 <div className="px-3 py-1 bg-red-500/10 rounded-md border border-red-500/20 text-[10px] font-bold text-red-400">WAITING</div>
+                 <div className="px-3 py-1 bg-blue-500/10 rounded-md border border-blue-500/20 text-[10px] font-bold text-blue-400">ACTIVE</div>
+                 <div className="px-3 py-1 bg-emerald-500/10 rounded-md border border-emerald-500/20 text-[10px] font-bold text-emerald-400">COMPLETED</div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   )
