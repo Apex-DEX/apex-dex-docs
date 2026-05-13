@@ -5,6 +5,8 @@ import { Overview } from './components/Sections/Overview'
 import { Architecture } from './components/Sections/Architecture'
 import { Contracts } from './components/Sections/Contracts'
 import { ComingSoon } from './components/Sections/ComingSoon'
+import { UserGuide } from './components/Sections/UserGuide'
+import { IndexerDocs } from './components/Sections/IndexerDocs'
 
 function DocsContent() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -19,8 +21,12 @@ function DocsContent() {
     switch (section) {
       case 'overview':
         return <Overview setSection={setSection} />;
+      case 'user-guide':
+        return <UserGuide />;
       case 'architecture':
         return <Architecture />;
+      case 'indexer':
+        return <IndexerDocs />;
       case 'contracts':
         return <Contracts />;
       default:

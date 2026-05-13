@@ -28,6 +28,7 @@ export function Sidebar({ section, setSection }: SidebarProps) {
             <h3 className="text-xs font-bold text-gray-500 mb-3 px-3 uppercase tracking-wider">Introduction</h3>
             <ul className="space-y-1">
               <li><button onClick={() => setSection('overview')} className={navItemClass('overview') + " w-full text-left"}>Overview</button></li>
+              <li><button onClick={() => setSection('user-guide')} className={navItemClass('user-guide') + " w-full text-left"}>How to Trade</button></li>
               <li><button onClick={() => setSection('quick-start')} className={navItemClass('quick-start') + " w-full text-left"}>Quick Start</button></li>
             </ul>
           </div>
