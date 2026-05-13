@@ -1,107 +1,66 @@
-import { Rocket, Droplet, Wallet, ExternalLink, ArrowRight, Zap } from 'lucide-react'
+
+import { Droplet, Wallet, ExternalLink, ArrowRight, Zap } from 'lucide-react';
+import { SectionHeader } from '../ui/SectionHeader';
 
 export function UserGuide() {
+  const steps = [
+    {
+      title: "Connect Wallet",
+      description: "Use the Connect button in the top right. We support MetaMask, Coinbase Wallet, and WalletConnect on the Sepolia Testnet.",
+      icon: Wallet,
+      color: "blue"
+    },
+    {
+      title: "Get Test Tokens",
+      description: "If you need USDT or ETH, visit our faucet links or mint tokens directly through the contract interfaces provided in the 'Contracts' section.",
+      icon: Droplet,
+      color: "purple"
+    },
+    {
+      title: "Start Trading",
+      description: "Select your token pair and enter the amount. Our Router will calculate the best path and price impact before you confirm the swap.",
+      icon: Zap,
+      color: "amber"
+    }
+  ];
+
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-6 text-white">
-        How to Trade on Apex
-      </h1>
-      <p className="text-lg text-gray-400 mb-12 leading-relaxed max-w-2xl">
-        New to DeFi or Apex DEX? Follow this guide to set up your wallet and start trading on the Sepolia Testnet.
-      </p>
+    <div className="pb-20">
+      <SectionHeader 
+        title="User Guide"
+        description="Learn how to interact with the Apex DEX, manage your liquidity, and execute swaps on the Sepolia Testnet."
+        badge="How to use"
+      />
 
-      {/* Step 1: Wallet */}
-      <section className="mb-16">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center">
-            <Wallet className="w-5 h-5 text-orange-400" />
+      <div className="grid md:grid-cols-3 gap-8 mb-20">
+        {steps.map((step, index) => (
+          <div key={index} className="p-8 bg-[#131A2A] border border-white/5 rounded-[2.5rem] relative group hover:border-white/10 transition-all">
+            <div className={`w-12 h-12 rounded-2xl bg-${step.color}-500/10 flex items-center justify-center mb-6 border border-${step.color}-500/20 group-hover:scale-110 transition-transform`}>
+              <step.icon className={`w-6 h-6 text-${step.color}-400`} />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-4">{step.title}</h3>
+            <p className="text-gray-400 text-sm leading-relaxed mb-6">
+              {step.description}
+            </p>
           </div>
-          <h2 className="text-2xl font-bold text-white">1. Connect Your Wallet</h2>
-        </div>
-        <div className="bg-[#131A2A] border border-white/5 rounded-2xl p-6">
-          <p className="text-gray-400 mb-4">
-            Apex DEX currently supports MetaMask and other EIP-1193 compatible wallets. Switch your network to <strong>Sepolia Testnet</strong> in your wallet settings.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <span className="px-3 py-1 bg-white/5 rounded-lg text-xs font-mono text-gray-300">Network: Sepolia</span>
-            <span className="px-3 py-1 bg-white/5 rounded-lg text-xs font-mono text-gray-300">Chain ID: 11155111</span>
-          </div>
-        </div>
-      </section>
+        ))}
+      </div>
 
-      {/* Step 2: Faucets */}
-      <section className="mb-16">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-            <Droplet className="w-5 h-5 text-blue-400" />
-          </div>
-          <h2 className="text-2xl font-bold text-white">2. Get Sepolia ETH</h2>
-        </div>
-        <p className="text-gray-400 mb-6 leading-relaxed">
-          You need Sepolia ETH to pay for gas fees. You can get free test ETH from the following faucets:
-        </p>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <a href="https://sepoliafaucet.com/" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4 bg-[#131A2A] border border-white/5 rounded-xl hover:border-blue-500/30 transition-all group">
-            <span className="font-semibold text-white">Alchemy Faucet</span>
-            <ExternalLink className="w-4 h-4 text-gray-500 group-hover:text-blue-400" />
-          </a>
-          <a href="https://www.infura.io/faucet/sepolia" target="_blank" rel="noreferrer" className="flex items-center justify-between p-4 bg-[#131A2A] border border-white/5 rounded-xl hover:border-blue-500/30 transition-all group">
-            <span className="font-semibold text-white">Infura Faucet</span>
-          </a>
-        </div>
-      </section>
-
-      {/* Step 3: Test USDT */}
-      <section className="mb-16">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-            <Zap className="w-5 h-5 text-emerald-400" />
-          </div>
-          <h2 className="text-2xl font-bold text-white">3. Mint Test USDT</h2>
-        </div>
-        <p className="text-gray-400 mb-6 leading-relaxed">
-          To trade on Apex, you can mint test USDT directly from the contract.
-        </p>
-        <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-8">
-          <h4 className="text-emerald-400 font-bold mb-4 flex items-center gap-2">
-            Contract: 0x7169d38820dfd117c3fa1f22a697dba58d90ba06
-          </h4>
-          <ol className="space-y-4 text-gray-300">
-            <li className="flex gap-4">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">1</span>
-              <span>Go to the <a href="https://sepolia.etherscan.io/address/0x7169d38820dfd117c3fa1f22a697dba58d90ba06#writeContract" target="_blank" rel="noreferrer" className="text-white underline decoration-emerald-500/50 hover:decoration-emerald-500">Etherscan Write Contract</a> tab.</span>
-            </li>
-            <li className="flex gap-4">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">2</span>
-              <span>Connect your Web3 wallet (Connect to Web3).</span>
-            </li>
-            <li className="flex gap-4">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">3</span>
-              <span>Find the <code>mint</code> function. Enter your wallet address and the amount (e.g., 1000000000 for 1000 USDT).</span>
-            </li>
-            <li className="flex gap-4">
-              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-bold">4</span>
-              <span>Click "Write" and confirm the transaction.</span>
-            </li>
-          </ol>
-        </div>
-      </section>
-
-      {/* Next Steps */}
-      <div className="mt-12 p-8 rounded-3xl bg-linear-to-r from-purple-600 to-indigo-600 flex flex-col md:flex-row items-center justify-between gap-6">
+      {/* External Links */}
+      <div className="bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-white/5 rounded-[3rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8">
         <div>
-          <h3 className="text-2xl font-bold text-white mb-2">Ready to trade?</h3>
-          <p className="text-purple-100">Now that you have assets, head over to the Swap page.</p>
+          <h3 className="text-2xl font-bold text-white mb-2">Need Sepolia ETH?</h3>
+          <p className="text-gray-400 text-sm">Visit the official Alchemy or Infura faucets to get started.</p>
         </div>
-        <a 
-          href="https://apex-dex.onrender.com/swap" 
-          target="_blank" 
-          rel="noreferrer"
-          className="px-8 py-4 bg-white text-purple-600 rounded-2xl font-bold hover:bg-purple-50 transition-all flex items-center gap-2"
-        >
-          Go to Swap <ArrowRight className="w-5 h-5" />
-        </a>
+        <div className="flex gap-4">
+          <a href="https://sepoliafaucet.com/" target="_blank" rel="noreferrer" className="px-6 py-3 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 text-sm font-bold text-white flex items-center gap-2 transition-all">
+            Alchemy Faucet <ExternalLink className="w-4 h-4" />
+          </a>
+          <a href="https://www.infura.io/faucet/sepolia" target="_blank" rel="noreferrer" className="px-6 py-3 bg-blue-500 hover:bg-blue-600 rounded-2xl text-sm font-bold text-white flex items-center gap-2 transition-all shadow-lg shadow-blue-500/20">
+            Infura Faucet <ArrowRight className="w-4 h-4" />
+          </a>
+        </div>
       </div>
     </div>
-  )
+  );
 }
