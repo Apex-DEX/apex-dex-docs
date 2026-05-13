@@ -29,10 +29,10 @@ export function Contracts() {
       ]
     },
     {
-      name: 'WETH/USDT Pair',
-      address: '0x5e8b8a666046d6ad00318043a5579a53208d9d59',
+      name: 'USDT/USDC Pair',
+      address: '0xa07f21c1e27989ae329adf4e41498e65258955da',
       role: 'Liquidity Pool (AMM)',
-      description: 'The Pair contract implements the Automated Market Maker (AMM) logic. It holds the reserves for a specific token pair and executes the actual swaps.',
+      description: 'The Pair contract implements the Automated Market Maker (AMM) logic. Every pair of tokens (e.g., USDT/USDC) has its own unique Pair contract deployed by the Factory.',
       methods: [
         { name: 'swap(amount0Out, amount1Out, ...)', desc: 'The core function that moves tokens in/out of the pool based on the Constant Product formula.' },
         { name: 'mint(to)', desc: 'Low-level function to mint LP tokens when liquidity is added.' },
