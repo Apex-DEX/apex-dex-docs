@@ -7,6 +7,7 @@ import { Contracts } from './components/Sections/Contracts'
 import { ComingSoon } from './components/Sections/ComingSoon'
 import { UserGuide } from './components/Sections/UserGuide'
 import { IndexerDocs } from './components/Sections/IndexerDocs'
+import { QuickStart } from './components/Sections/QuickStart'
 
 function DocsContent() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -27,6 +28,8 @@ function DocsContent() {
         return <Architecture />;
       case 'indexer':
         return <IndexerDocs />;
+      case 'quick-start':
+        return <QuickStart />;
       case 'contracts':
         return <Contracts />;
       default:
