@@ -7,18 +7,18 @@ export function Contracts() {
 
   const getTokenIcon = (symbol: string) => {
     const icons: Record<string, string> = {
-      USDT: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xdAC17F958D2ee523a2206206994597C13D831ec7/logo.png',
-      USDC: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png',
-      DAI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png',
-      WBTC: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png',
-      LINK: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png',
-      WETH: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27ead9083C756Cc2/logo.png',
-      UNI: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984/logo.png',
-      AAVE: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2EEaE9/logo.png',
-      MKR: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2/logo.png',
-      ARB: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xB50721BCf8d4471391900f8d9F7f5597945d39C0/logo.png', // Arbitrum logo
-      OP: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x4200000000000000000000000000000000000042/logo.png', // Optimism logo
-      SHIB: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x95aD61b0a150d79219dcf64E1E6Cc01f0B64C4cE/logo.png',
+      USDT: 'https://cryptologos.cc/logos/tether-usdt-logo.png',
+      USDC: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png',
+      DAI: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png',
+      WBTC: 'https://cryptologos.cc/logos/wrapped-bitcoin-wbtc-logo.png',
+      LINK: 'https://cryptologos.cc/logos/chainlink-link-logo.png',
+      WETH: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+      UNI: 'https://cryptologos.cc/logos/uniswap-uni-logo.png',
+      AAVE: 'https://cryptologos.cc/logos/aave-aave-logo.png',
+      MKR: 'https://cryptologos.cc/logos/maker-mkr-logo.png',
+      ARB: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png',
+      OP: 'https://cryptologos.cc/logos/optimism-ethereum-op-logo.png',
+      SHIB: 'https://cryptologos.cc/logos/shiba-inu-shib-logo.png',
     };
     return icons[symbol] || '';
   };
@@ -29,7 +29,6 @@ export function Contracts() {
       address: '0xC2E54EF993bD64c1e8c46d4d1695bEeA012d4DFD',
       role: 'Registry & Pair Creator',
       description: 'The Factory contract is the central registry of the Apex Protocol. It is responsible for creating and indexing individual liquidity pool contracts (Pairs).',
-      logic: 'Implements the IApexFactory interface, compatible with IUniswapV2Factory. This ensures that any tool, aggregator, or dashboard designed for Uniswap V2 can automatically discover and index our pools using the standard getPair and allPairs methods.',
       methods: [
         { name: 'createPair(tokenA, tokenB)', desc: 'Deploys a new Pair contract for a token duo using CREATE2 for deterministic addressing.' },
         { name: 'getPair(tokenA, tokenB)', desc: 'Returns the address of the Pair contract for the specified tokens.' },
@@ -41,7 +40,6 @@ export function Contracts() {
       address: '0xf1026084F75375070e71442387896CA1314bC6e0',
       role: 'Trading Interface',
       description: 'The Router is the primary entry point for users. It simplifies interactions by handling complex logic like multi-hop swaps and liquidity calculations.',
-      logic: 'Implements the IApexRouter02 interface, inheriting from IUniswapV2Router02. This compatibility allows developers to use standard SDKs (like Uniswap SDK) to generate trade paths and call data. It handles safe token transfers and provides the essential "AmountOut" calculations.',
       methods: [
         { name: 'addLiquidity(...)', desc: 'Adds liquidity to a pool, handling token transfers and LP token minting.' },
         { name: 'swapExactTokensForTokens(...)', desc: 'Executes a swap while ensuring the output meet the users slippage requirements.' },
@@ -53,7 +51,6 @@ export function Contracts() {
       address: '0xa07f21c1e27989ae329adf4e41498e65258955da',
       role: 'Liquidity Pool (AMM)',
       description: 'The Pair contract implements the Automated Market Maker (AMM) logic. Every pair of tokens (e.g., USDT/USDC) has its own unique Pair contract deployed by the Factory.',
-      logic: 'Implements the IApexPair interface, compliant with IUniswapV2Pair and ERC20. It manages the Constant Product (x * y = k) invariant and issues LP tokens to providers. Its compatibility ensures that external price oracles and analytics tools can read reserves directly.',
       methods: [
         { name: 'swap(amount0Out, amount1Out, ...)', desc: 'The core function that moves tokens in/out of the pool based on the Constant Product formula.' },
         { name: 'mint(to)', desc: 'Low-level function to mint LP tokens when liquidity is added.' },
@@ -121,15 +118,6 @@ export function Contracts() {
               <div>
                 <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Functional Description</h4>
                 <p className="text-gray-400 leading-relaxed mb-6">{contract.description}</p>
-                <div className="p-5 bg-purple-500/5 rounded-2xl border border-purple-500/10">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Cpu className="w-4 h-4 text-purple-400" />
-                    <span className="text-xs font-bold text-white uppercase tracking-wider">Uniswap V2 Interface</span>
-                  </div>
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    {contract.logic}
-                  </p>
-                </div>
               </div>
               <div>
                 <h4 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Key Methods</h4>
@@ -147,12 +135,28 @@ export function Contracts() {
         ))}
       </div>
 
+      {/* Uniswap V2 Info Section */}
+      <div className="mb-20 p-8 bg-purple-500/5 border border-purple-500/10 rounded-3xl">
+        <div className="flex items-center gap-3 mb-6">
+          <Cpu className="w-8 h-8 text-purple-400" />
+          <h2 className="text-2xl font-bold text-white">Uniswap V2 Compatibility</h2>
+        </div>
+        <div className="grid md:grid-cols-2 gap-8 text-sm leading-relaxed text-gray-400">
+          <p>
+            Apex Protocol fully implements the <strong>Uniswap V2 Core & Periphery</strong> interfaces. This design choice ensures maximum interoperability with the existing Ethereum DeFi ecosystem. Any tool, SDK, or dashboard that supports Uniswap V2 can interact with Apex contracts out of the box.
+          </p>
+          <p>
+            By adhering to these standard interfaces (IApexFactory, IApexRouter02, IApexPair), we enable developers to use the <strong>Uniswap SDK</strong> to generate trade paths, calculate price impact, and construct transaction data without needing custom integration logic.
+          </p>
+        </div>
+      </div>
+
       {/* Test Tokens Section */}
       <h2 className="text-3xl font-bold mb-6 text-white flex items-center gap-3">
         <Zap className="w-8 h-8 text-amber-400" /> Test Ecosystem Assets
       </h2>
       <p className="text-gray-400 mb-10 leading-relaxed max-w-3xl">
-        We have deployed a suite of popular test tokens to facilitate easy liquidity provisioning and robust testing across various market conditions. These assets can be minted via the <a href="https://sepolia.etherscan.io/address/0x7169D38820dfd117C3FA1f22a697dBA58d90BA06#writeContract" target="_blank" rel="noreferrer" className="text-white underline decoration-amber-500/30">USDT Minting Guide</a>.
+        We have deployed a suite of popular test tokens to facilitate easy liquidity provisioning and robust testing across various market conditions. These assets can be minted via the <a href="https://sepolia.etherscan.io/address/0x7169D38820dfd117C3FA1f22a697DBA58d90BA06#writeContract" target="_blank" rel="noreferrer" className="text-white underline decoration-amber-500/30">USDT Minting Guide</a>.
       </p>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
@@ -162,7 +166,15 @@ export function Contracts() {
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-full overflow-hidden bg-white/5 flex items-center justify-center border border-white/10 group-hover:border-amber-500/30 transition-all">
                   {getTokenIcon(token.symbol) ? (
-                    <img src={getTokenIcon(token.symbol)} alt={token.symbol} className="w-full h-full object-cover" />
+                    <img 
+                      src={getTokenIcon(token.symbol)} 
+                      alt={token.symbol} 
+                      className="w-full h-full object-contain p-1" 
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                        (e.target as HTMLImageElement).parentElement!.innerHTML = `<span class="font-bold text-xs text-white">${token.symbol[0]}</span>`;
+                      }}
+                    />
                   ) : (
                     <span className="font-bold text-xs text-white">{token.symbol[0]}</span>
                   )}
