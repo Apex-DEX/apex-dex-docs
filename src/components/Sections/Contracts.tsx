@@ -28,11 +28,12 @@ export function Contracts() {
 
   return (
     <div className="pb-20">
-      <SectionHeader 
-        title="Smart Contracts"
-        description="Apex Protocol is built on a set of audited, modular smart contracts on the Sepolia Testnet. Our architecture ensures deterministic pool creation and secure trade execution."
+      <SectionHeader
+        title="Smart contracts"
+        description="Apex deploys Uniswap V2–compatible core and periphery contracts on Sepolia: a factory for deterministic pair creation, minimal proxy pairs that hold reserves and mint LP tokens, a user-facing router for swaps and liquidity, and a pure math library shared with off-chain quoters."
         badge="Protocol"
         icon={ShieldCheck}
+        githubUrl={APEX_CONFIG.links.github.contracts}
       />
 
       {/* Core Contracts Section */}
@@ -100,6 +101,29 @@ export function Contracts() {
               <DetailItem title="Oracle Capabilities" desc="Maintains Cumulative Prices for manipulation-resistant TWAP oracles." />
             </div>
           </div>
+        </section>
+
+        <section className="bg-[#131A2A]/40 p-10 rounded-3xl border border-white/10 space-y-4">
+          <h3 className="text-2xl font-bold text-white">ApexLibrary (periphery math)</h3>
+          <p className="text-gray-400 text-sm leading-relaxed max-w-3xl">
+            The library exposes <strong className="text-gray-200">pure</strong> helpers—quote amounts for liquidity provisioning,
+            compute output amounts with the 0.3% fee baked in, and derive pair addresses without hitting the chain. Frontends and
+            integrators should mirror these functions client-side for previews, then rely on the router for authoritative execution.
+          </p>
+          <ul className="text-sm text-gray-400 space-y-2 list-disc pl-5">
+            <li>
+              <code className="text-pink-300">getAmountOut</code> / <code className="text-pink-300">getAmountsOut</code> — propagate
+              swaps across multi-hop paths using cached reserve snapshots.
+            </li>
+            <li>
+              <code className="text-pink-300">quote</code> — proportional deposit helper when adding asymmetric notions before the
+              router rebalances to the pool ratio.
+            </li>
+            <li>
+              <code className="text-pink-300">pairFor</code> — CREATE2 address derivation for pairs, enabling routing tables without
+              extra <code className="text-pink-300">getPair</code> calls.
+            </li>
+          </ul>
         </section>
       </div>
     </div>

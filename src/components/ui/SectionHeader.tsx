@@ -1,23 +1,22 @@
-
-import type { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react'
 
 interface SectionHeaderProps {
-  title: string;
-  description: string;
-  icon?: LucideIcon;
-  badge?: string;
-  githubUrl?: string;
-  className?: string;
+  title: string
+  description: string
+  icon?: LucideIcon
+  badge?: string
+  githubUrl?: string
+  className?: string
 }
 
-export const SectionHeader: React.FC<SectionHeaderProps> = ({ 
-  title, 
-  description, 
-  icon: Icon, 
+export function SectionHeader({
+  title,
+  description,
+  icon: Icon,
   badge,
   githubUrl,
-  className = "" 
-}) => {
+  className = '',
+}: SectionHeaderProps) {
   return (
     <div className={`flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 animate-in fade-in slide-in-from-top-4 duration-700 ${className}`}>
       <div>
@@ -49,5 +48,5 @@ export const SectionHeader: React.FC<SectionHeaderProps> = ({
         </a>
       )}
     </div>
-  );
-};
+  )
+}

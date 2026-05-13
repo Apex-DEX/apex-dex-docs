@@ -1,164 +1,146 @@
-import { Code2, Zap, Database, Search, Filter, Activity, Terminal } from 'lucide-react';
-import { SectionHeader } from '../ui/SectionHeader';
-import { FlowArrow } from '../ui/FlowArrow';
-import { APEX_CONFIG } from '../../config';
+import { Code2 } from 'lucide-react'
+import { SectionHeader } from '../ui/SectionHeader'
+import { MermaidDiagram } from '../ui/MermaidDiagram'
+import { APEX_CONFIG } from '../../config'
+
+const pipeline = `flowchart TB
+  subgraph inputs["Inputs"]
+    WS[WebSocket newHeads]
+    POL[HTTP polling loop]
+  end
+  subgraph coord["Coordinator"]
+    CO[Merge heads and gap fill]
+    FB[Fetch block with backoff]
+  end
+  subgraph buf["Backpressure"]
+    CH[blockCh buffered channel]
+  end
+  subgraph pool["Worker pool"]
+    WK[N parallel workers]
+  end
+  subgraph persist["Persistence"]
+    PG[PostgreSQL]
+    ST[indexer_state checkpoint]
+  end
+  WS --> CO
+  POL --> CO
+  CO --> FB
+  FB --> CH
+  CH --> WK
+  WK --> PG
+  WK --> ST`
+
+const layers = `flowchart TB
+  subgraph domain["Domain layer"]
+    D[Entities and port interfaces]
+  end
+  subgraph application["Application layer"]
+    A[Coordinator and workers]
+  end
+  subgraph infra["Infrastructure"]
+    I[RPC client pgx redis]
+  end
+  A --> D
+  I --> D`
 
 export function IndexerDocs() {
   return (
-    <div className="pb-20">
-      <SectionHeader 
-        title="Go Indexer Pipeline"
-        description="A precise mapping of how raw blockchain logs are transformed into structured financial analytics."
-        badge="Data Pipeline"
-        githubUrl={APEX_CONFIG.links.github.indexer}
+    <article className="pb-20 space-y-14 text-gray-400 text-sm leading-relaxed">
+      <SectionHeader
+        title="Go indexer"
+        description="The standalone indexer service (Go, Clean Architecture) streams Sepolia blocks into PostgreSQL: full block payloads with transactions and logs, written idempotently so WebSocket delivery, polling catch-up, and restarts never duplicate rows. It advances a shared checkpoint table that originated from the NestJS stack."
+        badge="Ingestion"
         icon={Code2}
+        githubUrl={APEX_CONFIG.links.github.indexer}
       />
 
-      {/* Main Pipeline Logic Diagram */}
-      <div className="bg-[#0d111c] border border-white/5 rounded-[2.5rem] p-10 lg:p-16 mb-20 shadow-2xl relative overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-b from-blue-500/5 to-transparent pointer-events-none"></div>
-        
-        <div className="flex flex-col gap-12 relative max-w-4xl mx-auto">
-          
-          {/* Top Stage: Connection */}
-          <div className="flex justify-center">
-            <StageCard 
-              icon={Terminal} 
-              title="Blockchain Connector" 
-              subtitle="WSS / JSON-RPC Listener" 
-              color="blue"
-            />
-          </div>
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold text-white">Why it exists</h2>
+        <p>
+          The legacy in-process NestJS poller fetched work sequentially on a fixed interval without RPC failover. The Go service
+          replaces that with parallel ingestion, exponential backoff around RPC faults, and explicit checkpointing so operators can
+          restart without manual cursor management.
+        </p>
+      </section>
 
-          <FlowArrow direction="down" color="blue" length="10" />
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold text-white">Runtime pipeline</h2>
+        <ol className="list-decimal pl-5 space-y-2">
+          <li>
+            <strong className="text-gray-200">Boot</strong> — read <code className="text-purple-300">indexer_state</code>; if empty,
+            start from the current chain head; otherwise continue from <code className="text-purple-300">lastScannedBlock + 1</code>.
+          </li>
+          <li>
+            <strong className="text-gray-200">Dual drivers</strong> — WebSocket <code className="text-purple-300">newHeads</code> for
+            low-latency notifications plus an HTTP loop (default ~3s) that compares the latest head with the checkpoint to close
+            gaps after downtime.
+          </li>
+          <li>
+            <strong className="text-gray-200">Fetch</strong> — each target height is retrieved through the chain adapter with retry
+            (for example 1s → 2s → 4s backoff) and multi-RPC failover.
+          </li>
+          <li>
+            <strong className="text-gray-200">Publish</strong> — block numbers enter a buffered channel (default capacity 100) so
+            producers block instead of spawning unbounded goroutines when workers fall behind.
+          </li>
+          <li>
+            <strong className="text-gray-200">Persist</strong> — each worker opens a SQL transaction, inserts the block, batch-inserts
+            transactions and logs with <code className="text-purple-300">ON CONFLICT DO NOTHING</code>, commits, then upserts the
+            checkpoint row.
+          </li>
+        </ol>
+        <MermaidDiagram chart={pipeline} />
+      </section>
 
-          {/* Middle Stage: Parallel Processing */}
-          <div className="flex flex-wrap justify-center gap-8 pt-8 relative">
-            <WorkerCard icon={Search} title="Swap Decoder" group="A" />
-            <WorkerCard icon={Zap} title="Price Calculation" group="Logic" highlighted />
-            <WorkerCard icon={Filter} title="Mint/Burn Parser" group="B" />
-            
-            {/* Connecting Lines Background */}
-            <div className="absolute top-[-40px] left-1/2 -translate-x-1/2 w-[500px] h-20 border-x border-t border-dashed border-white/10 -z-10 rounded-t-[40px] opacity-30"></div>
-          </div>
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold text-white">Clean architecture layers</h2>
+        <p>
+          Domain types are free of vendor imports: reserves and hashes use <code className="text-purple-300">*big.Int</code>, and
+          repositories declare behaviour without referencing pgx. Application services orchestrate goroutines; infrastructure packages
+          contain the concrete Ethereum and PostgreSQL clients.
+        </p>
+        <MermaidDiagram chart={layers} />
+      </section>
 
-          <FlowArrow direction="down" color="amber" length="10" />
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold text-white">RPC resilience</h2>
+        <p>
+          Configuration accepts an ordered list of RPC URLs (HTTP or WebSocket). Dial attempts time out per node; subsequent reads
+          iterate until one node answers, giving automatic failover when a provider degrades.
+        </p>
+      </section>
 
-          {/* Bottom Stage: Database */}
-          <div className="flex justify-center">
-            <StageCard 
-              icon={Database} 
-              title="Persistent Storage" 
-              subtitle="PostgreSQL Batch Write" 
-              color="amber"
-            />
-          </div>
-        </div>
-      </div>
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold text-white">Schema ownership</h2>
+        <p>
+          The indexer never creates migrations. Run TypeORM migrations from <code className="text-purple-300">apex-dex-backend</code>{' '}
+          to create <code className="text-purple-300">raw_blocks</code>, <code className="text-purple-300">raw_transactions</code>,{' '}
+          <code className="text-purple-300">raw_logs</code>, and <code className="text-purple-300">indexer_state</code>. Column naming
+          follows the backend conventions (including camelCase fields where TypeORM generated them).
+        </p>
+      </section>
 
-      {/* Deep Technical Deep-Dive */}
-      <div className="space-y-16 mt-24">
-        <section>
-          <h2 className="text-3xl font-bold text-white mb-8 border-b border-white/5 pb-4 text-center">Execution Loop Architecture</h2>
-          <div className="grid md:grid-cols-2 gap-12">
-            <DetailCard 
-              title="Catch-up Sync" 
-              color="blue"
-              code={`// Sync Logic\nfromBlock := db.GetLast() + 1\ntoBlock := rpc.GetLatest()\nindexer.Backfill(from, to)`}
-              description="On startup, the Indexer queries PostgreSQL for the last processed block and fetches all missed events from the RPC node."
-            />
-            <DetailCard 
-              title="Live Subscription" 
-              color="emerald"
-              description="Once synced, it opens an eth_subscribe channel. Every new block header triggers a worker group to check for Factory/Pair events."
-              items={['Zero-latency capture', 'Auto-reconnection']}
-            />
-          </div>
-        </section>
+      <section className="space-y-4">
+        <h2 className="text-2xl font-bold text-white">Redis</h2>
+        <p>
+          A Redis client is initialised for future phases (for example caching decoded events or publishing metrics). Hot paths in the
+          ingestion MVP focus on PostgreSQL durability.
+        </p>
+      </section>
 
-        <section>
-          <h2 className="text-3xl font-bold text-white mb-8 border-b border-white/5 pb-4 text-center">USD Pricing Discovery</h2>
-          <div className="bg-linear-to-r from-blue-900/10 to-transparent p-10 border border-blue-500/10 rounded-[2.5rem]">
-            <div className="grid md:grid-cols-3 gap-8">
-              <StepItem step="1" title="Anchor Search" desc="Identifies if one of the tokens is a stable anchor (USDT/USDC)." />
-              <StepItem step="2" title="Path Tracing" desc="Traces a path through WETH if no direct stable pair exists." />
-              <StepItem step="3" title="Validation" desc="Cross-references multiple pools for precision and outlier protection." />
-            </div>
-          </div>
-        </section>
-
-        <section className="pb-12 text-center max-w-3xl mx-auto">
-          <div className="p-8 bg-red-500/5 border border-red-500/10 rounded-3xl">
-            <h4 className="text-red-400 font-bold mb-4 flex items-center justify-center gap-2 uppercase tracking-widest text-xs">
-               <Activity className="w-4 h-4" /> Handling Chain Re-organizations
-            </h4>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              The Indexer maintains a 20-block deep local cache. Mismatched block hashes trigger an automatic rollback and re-processing to ensure data integrity.
-            </p>
-          </div>
-        </section>
-      </div>
-    </div>
-  );
-}
-
-function StageCard({ icon: Icon, title, subtitle, color }: any) {
-  const colors: any = {
-    blue: "border-blue-500/30",
-    amber: "border-amber-500/30"
-  };
-  return (
-    <div className={`w-72 p-6 bg-[#131A2A] border ${colors[color]} rounded-2xl text-center relative z-10 shadow-xl`}>
-      <Icon className={`w-10 h-10 mx-auto mb-4 text-${color}-400`} />
-      <h4 className="font-bold text-white mb-1">{title}</h4>
-      <p className="text-[10px] text-gray-500 uppercase font-mono">{subtitle}</p>
-    </div>
-  );
-}
-
-function WorkerCard({ icon: Icon, title, group, highlighted }: any) {
-  return (
-    <div className={`w-48 p-5 bg-[#131A2A] border ${highlighted ? 'border-emerald-500/30 shadow-emerald-500/5' : 'border-white/5'} rounded-2xl text-center relative shadow-lg`}>
-      <Icon className={`w-8 h-8 ${highlighted ? 'text-emerald-400 animate-pulse' : 'text-gray-400'} mx-auto mb-3`} />
-      <h5 className="text-xs font-bold text-white mb-1">{title}</h5>
-      <p className="text-[9px] text-gray-500">Group {group}</p>
-    </div>
-  );
-}
-
-function DetailCard({ title, color, code, description, items }: any) {
-  const colors: any = {
-    blue: "text-blue-400",
-    emerald: "text-emerald-400"
-  };
-  return (
-    <div className="p-8 bg-[#131A2A]/40 border border-white/5 rounded-3xl">
-      <h4 className={`${colors[color]} font-bold uppercase tracking-widest text-xs mb-4`}>{title}</h4>
-      <p className="text-gray-400 text-sm leading-relaxed mb-4">{description}</p>
-      {code && (
-        <div className="bg-black/20 p-4 rounded-xl font-mono text-[10px] text-gray-500 border border-white/5 whitespace-pre">
-          {code}
-        </div>
-      )}
-      {items && (
-        <ul className="space-y-2 text-xs text-gray-500">
-          {items.map((it: string) => (
-            <li key={it} className="flex items-center gap-2">
-              <div className={`w-1 h-1 rounded-full bg-${color}-500`}></div>
-              <span>{it}</span>
-            </li>
-          ))}
+      <section className="space-y-4 rounded-2xl border border-white/10 bg-[#131A2A] p-6">
+        <h3 className="text-lg font-semibold text-white">Failure handling</h3>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>RPC errors bubble through backoff; sustained outages stall the channel until nodes recover.</li>
+          <li>
+            Worker persistence errors are logged; the polling loop revisits the same heights, relying on idempotent inserts to converge.
+          </li>
+          <li>
+            Reorgs are modelled in domain entities (<code className="text-purple-300">IsReorg</code>) with repository helpers to delete
+            blocks above a rolled-back height—wire-up depth depends on the release branch.
+          </li>
         </ul>
-      )}
-    </div>
-  );
-}
-
-function StepItem({ step, title, desc }: any) {
-  return (
-    <div className="space-y-4">
-      <div className="text-blue-400 font-bold text-xs uppercase">Step {step}: {title}</div>
-      <p className="text-[11px] text-gray-500 leading-relaxed">{desc}</p>
-    </div>
-  );
+      </section>
+    </article>
+  )
 }

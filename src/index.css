@@ -27,3 +27,8 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
 }
+
+.mermaid-root svg {
+  max-width: 100%;
+  height: auto;
+}

@@ -1,82 +1,83 @@
-import { Repeat, ShieldCheck, Zap, AlertTriangle, Info } from 'lucide-react';
-import { SectionHeader } from '../ui/SectionHeader';
+import { Repeat, ShieldCheck, Zap, AlertTriangle, Info } from 'lucide-react'
+import { SectionHeader } from '../ui/SectionHeader'
 
 export function SwapGuide() {
   const steps = [
     {
-      title: "Select Your Assets",
-      desc: "Choose the tokens you want to trade from the dropdown menus. If you don't see a token, ensure you have its contract address from our 'Smart Contracts' list.",
+      title: 'Select tokens and direction',
+      desc: 'Pick the sell token and buy token. If no direct pool exists, the router constructs a multi-hop path (commonly through WETH or a stable anchor). Unknown tokens can be added by contract address after you verify the bytecode.',
       icon: Repeat,
-      color: "blue"
+      box: 'bg-blue-500/10 border-blue-500/25',
+      iconColor: 'text-blue-400',
     },
     {
-      title: "Configure Slippage",
-      desc: "Set your slippage tolerance (default 0.5%). This protects you from front-running and large price movements during transaction confirmation.",
+      title: 'Tune slippage and deadline',
+      desc: 'Slippage caps the minimum output you are willing to accept versus the simulated quote. Deadlines invalidate stale signatures if mempool delay spikes.',
       icon: ShieldCheck,
-      color: "purple"
+      box: 'bg-purple-500/10 border-purple-500/25',
+      iconColor: 'text-purple-400',
     },
     {
-      title: "Confirm & Sign",
-      desc: "The Router will construct the transaction data. Review the final amount, estimated fee, and price impact before signing in your wallet.",
+      title: 'Review, sign, broadcast',
+      desc: 'The UI surfaces price impact, network fee estimates, and allowance status. After you approve spenders when required, submit the swap transaction and track confirmation in your wallet and block explorer.',
       icon: Zap,
-      color: "amber"
-    }
-  ];
+      box: 'bg-amber-500/10 border-amber-500/25',
+      iconColor: 'text-amber-400',
+    },
+  ]
 
   return (
-    <div className="pb-20">
-      <SectionHeader 
-        title="How to Swap"
-        description="A step-by-step guide to executing trades on the Apex DEX. Learn how our Router ensures safe and efficient token exchanges."
-        badge="Trading Guide"
+    <div className="pb-20 text-gray-400 text-sm leading-relaxed space-y-12">
+      <SectionHeader
+        title="Swap guide"
+        description="Detailed breakdown of the swap UX: routing, risk controls, and the boundary between simulation (RPC eth_call) and execution (signed transaction)."
+        badge="Trading"
       />
 
-      <div className="space-y-8 mb-20">
+      <div className="space-y-6">
         {steps.map((step, idx) => (
-          <div key={idx} className="flex gap-8 p-8 bg-[#131A2A] border border-white/5 rounded-[2.5rem] hover:border-white/10 transition-all group">
-            <div className={`w-16 h-16 rounded-2xl bg-${step.color}-500/10 border border-${step.color}-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}>
-              <step.icon className={`w-8 h-8 text-${step.color}-400`} />
+          <div
+            key={step.title}
+            className="flex gap-6 p-6 md:p-8 rounded-2xl border border-white/10 bg-[#131A2A] hover:border-white/20 transition-colors"
+          >
+            <div
+              className={`w-14 h-14 rounded-xl flex items-center justify-center shrink-0 border ${step.box}`}
+            >
+              <step.icon className={`w-7 h-7 ${step.iconColor}`} />
             </div>
             <div>
-              <div className="text-xs font-bold text-gray-600 uppercase tracking-widest mb-2">Step 0{idx + 1}</div>
-              <h3 className="text-2xl font-bold text-white mb-4">{step.title}</h3>
-              <p className="text-gray-400 leading-relaxed max-w-2xl">{step.desc}</p>
+              <div className="text-[11px] font-bold text-gray-600 uppercase tracking-widest mb-1">
+                Step {idx + 1}
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">{step.title}</h3>
+              <p className="max-w-2xl">{step.desc}</p>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="grid md:grid-cols-2 gap-8">
-        <div className="p-8 bg-blue-500/5 border border-blue-500/10 rounded-[2.5rem]">
-          <div className="flex items-center gap-3 mb-6">
-            <Info className="w-6 h-6 text-blue-400" />
-            <h4 className="text-xl font-bold text-white">Price Impact</h4>
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="p-6 rounded-2xl border border-blue-500/20 bg-blue-500/5">
+          <div className="flex items-center gap-2 mb-3">
+            <Info className="w-5 h-5 text-blue-400" />
+            <h4 className="text-lg font-bold text-white">Price impact</h4>
           </div>
-          <p className="text-sm text-gray-400 leading-relaxed">
-            Trading large amounts relative to the pool size will move the price. Our interface highlights high price impact in red to prevent accidental losses due to low liquidity.
+          <p>
+            Large trades relative to pool depth move the spot price along the x*y=k curve. The interface warns when impact crosses
+            configured thresholds so users can split trades or pick deeper pools.
           </p>
         </div>
-
-        <div className="p-8 bg-amber-500/5 border border-amber-500/10 rounded-[2.5rem]">
-          <div className="flex items-center gap-3 mb-6">
-            <AlertTriangle className="w-6 h-6 text-amber-400" />
-            <h4 className="text-xl font-bold text-white">Network Gas</h4>
+        <div className="p-6 rounded-2xl border border-amber-500/20 bg-amber-500/5">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="w-5 h-5 text-amber-400" />
+            <h4 className="text-lg font-bold text-white">Allowances and reverts</h4>
           </div>
-          <p className="text-sm text-gray-400 leading-relaxed">
-            Since we operate on the Sepolia Testnet, you'll need test ETH for gas fees. Ensure your wallet has a balance before initiating a swap.
+          <p>
+            Swaps revert if allowance is too low, slippage is violated, deadlines expire, or the pool runs out of the requested output
+            leg. Read the revert data in the explorer to distinguish user configuration issues from pool liquidity issues.
           </p>
         </div>
-      </div>
-
-      <div className="mt-20 flex flex-col items-center text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full text-xs font-bold text-purple-400 uppercase tracking-widest mb-6">
-          Pro Tip
-        </div>
-        <h3 className="text-2xl font-bold text-white mb-4">Multi-hop Swaps</h3>
-        <p className="text-gray-400 max-w-2xl leading-relaxed">
-          If there's no direct liquidity between two tokens, our Router automatically finds the most efficient path through intermediate pools (e.g., TOKEN → WETH → USDT).
-        </p>
       </div>
     </div>
-  );
+  )
 }
