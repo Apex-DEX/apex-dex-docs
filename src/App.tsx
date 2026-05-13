@@ -8,6 +8,8 @@ import { ComingSoon } from './components/Sections/ComingSoon'
 import { UserGuide } from './components/Sections/UserGuide'
 import { IndexerDocs } from './components/Sections/IndexerDocs'
 import { QuickStart } from './components/Sections/QuickStart'
+import { SwapGuide } from './components/Sections/SwapGuide'
+import { LiquidityGuide } from './components/Sections/LiquidityGuide'
 
 function DocsContent() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,6 +34,10 @@ function DocsContent() {
         return <QuickStart />;
       case 'contracts':
         return <Contracts />;
+      case 'swap-guide':
+        return <SwapGuide />;
+      case 'liquidity-guide':
+        return <LiquidityGuide />;
       default:
         return <ComingSoon setSection={setSection} />;
     }
