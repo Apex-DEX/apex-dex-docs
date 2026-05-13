@@ -11,9 +11,27 @@ import { QuickStart } from './components/Sections/QuickStart'
 import { SwapGuide } from './components/Sections/SwapGuide'
 import { LiquidityGuide } from './components/Sections/LiquidityGuide'
 
+import { useEffect } from 'react';
+
 function DocsContent() {
   const [searchParams, setSearchParams] = useSearchParams();
   const section = searchParams.get('section') || 'overview';
+
+  useEffect(() => {
+    const titles: Record<string, string> = {
+      'overview': 'Overview',
+      'user-guide': 'How to Trade',
+      'architecture': 'System Architecture',
+      'indexer': 'Backend Indexer',
+      'quick-start': 'Quick Start',
+      'contracts': 'Smart Contracts',
+      'swap-guide': 'How to Swap',
+      'liquidity-guide': 'Provide Liquidity'
+    };
+    
+    const pageTitle = titles[section] || 'Documentation';
+    document.title = `${pageTitle} | Apex DEX Docs`;
+  }, [section]);
 
   const setSection = (id: string) => {
     setSearchParams({ section: id });
