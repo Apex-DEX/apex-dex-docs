@@ -87,10 +87,6 @@ export function IndexerDocs() {
             </div>
           </div>
 
-        </div>
-      </div>
-
-      </div>
 
       {/* Deep Technical Deep-Dive */}
       <div className="space-y-16 mt-24">

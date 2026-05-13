@@ -104,10 +104,6 @@ export function Architecture() {
             </div>
           </div>
 
-        </div>
-      </div>
-
-      </div>
 
       {/* Detailed Technical Breakdown */}
       <div className="space-y-16 mt-24">

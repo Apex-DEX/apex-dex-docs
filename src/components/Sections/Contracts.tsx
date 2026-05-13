@@ -200,10 +200,6 @@ export function Contracts() {
               </button>
             </div>
           </div>
-        ))}
-      </div>
-
-      </div>
 
       {/* Detailed Contract Logic */}
       <div className="space-y-16 mt-24">
