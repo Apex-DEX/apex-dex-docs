@@ -79,6 +79,25 @@ export function UserGuide() {
           </a>
         </div>
       </div>
+
+      <div className="rounded-2xl border border-white/10 bg-linear-to-r from-green-500/10 to-emerald-500/10 p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div>
+          <h3 className="text-xl font-bold text-white mb-2">Need Test USDT?</h3>
+          <p className="text-gray-500 text-sm max-w-xl">
+            You can mint test USDT directly from the smart contract on Sepolia Etherscan to use in the exchange.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <a
+            href="https://sepolia.etherscan.io/token/0x7169D38820dfd117C3FA1f22a697dBA58d90BA06#writeContract"
+            target="_blank"
+            rel="noreferrer"
+            className="px-5 py-2.5 rounded-xl bg-green-600 hover:bg-green-500 text-sm font-semibold text-white inline-flex items-center gap-2"
+          >
+            Mint USDT <ExternalLink className="w-4 h-4" />
+          </a>
+        </div>
+      </div>
     </div>
   )
 }
