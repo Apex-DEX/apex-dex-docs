@@ -103,15 +103,7 @@ export function IndexerDocs() {
         </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-bold text-white">Schema ownership</h2>
-        <p>
-          The indexer never creates migrations. Run TypeORM migrations from <code className="text-purple-300">apex-dex-backend</code>{' '}
-          to create <code className="text-purple-300">raw_blocks</code>, <code className="text-purple-300">raw_transactions</code>,{' '}
-          <code className="text-purple-300">raw_logs</code>, and <code className="text-purple-300">indexer_state</code>. Column naming
-          follows the backend conventions (including camelCase fields where TypeORM generated them).
-        </p>
-      </section>
+
 
       <section className="space-y-4">
         <h2 className="text-2xl font-bold text-white">Redis</h2>
