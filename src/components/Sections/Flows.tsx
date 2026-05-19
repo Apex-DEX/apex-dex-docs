@@ -1,66 +1,66 @@
 import { SectionHeader } from '../ui/SectionHeader'
 import { MermaidDiagram } from '../ui/MermaidDiagram'
 
-const swapReadWrite = `sequenceDiagram
-  participant User
-  participant UI as Frontend
-  participant RPC as Sepolia RPC
-  participant Router as ApexRouter
-  participant Pair as ApexPair
-  User->>UI: Enter amount select tokens
-  UI->>RPC: eth_call quote reserves router
-  RPC-->>UI: Expected output price impact
-  User->>UI: Confirm swap
-  UI->>User: Wallet signing request
-  User->>RPC: Signed swapExact tx
-  RPC->>Router: Execute swap path
-  Router->>Pair: swap transfer tokens
-  Pair-->>RPC: Swap and Sync events`
+const swapReadWrite = `flowchart TB
+  User((User))
+  UI[Frontend]
+  RPC[Sepolia RPC]
+  Router[ApexRouter]
+  Pair[ApexPair]
+  
+  User -- "Enter amount select tokens" --> UI
+  UI -- "eth_call quote reserves router" --> RPC
+  RPC -- "Expected output price impact" --> UI
+  User -- "Confirm swap" --> UI
+  UI -- "Wallet signing request" --> User
+  User -- "Signed swapExact tx" --> RPC
+  RPC -- "Execute swap path" --> Router
+  Router -- "swap transfer tokens" --> Pair
+  Pair -- "Swap and Sync events" --> RPC`
 
-const addLiquidity = `sequenceDiagram
-  participant User
-  participant UI as Frontend
-  participant T as ERC20 tokens
-  participant Router as ApexRouter
-  participant Pair as ApexPair
-  User->>UI: Choose pair and amounts
-  UI->>User: Approve token A if needed
-  UI->>User: Approve token B if needed
-  User->>UI: Confirm addLiquidity
-  UI->>Router: addLiquidity with deadline and mins
-  Router->>T: transferFrom user to Pair
-  Router->>Pair: mint LP to user`
+const addLiquidity = `flowchart TB
+  User((User))
+  UI[Frontend]
+  T[ERC20 tokens]
+  Router[ApexRouter]
+  Pair[ApexPair]
+  
+  User -- "Choose pair and amounts" --> UI
+  UI -- "Approve token A if needed" --> User
+  UI -- "Approve token B if needed" --> User
+  User -- "Confirm addLiquidity" --> UI
+  UI -- "addLiquidity with deadline" --> Router
+  Router -- "transferFrom user to Pair" --> T
+  Router -- "mint LP to user" --> Pair`
 
-const readAnalytics = `sequenceDiagram
-  participant User
-  participant UI as Frontend
-  participant API as NestJS API
-  participant PG as PostgreSQL
-  participant RD as Redis
-  User->>UI: Open pools tokens chart data
-  UI->>API: GET exchange pairs etc
-  API->>RD: Optional cache read
-  alt cache miss
-    API->>PG: SQL aggregates joins
-    PG-->>API: Rows
-    API->>RD: Populate cache when used
-  end
-  API-->>UI: JSON payload`
+const readAnalytics = `flowchart TB
+  User((User))
+  UI[Frontend]
+  API[NestJS API]
+  PG[(PostgreSQL)]
+  RD[(Redis)]
+  
+  User -- "Open pools tokens chart data" --> UI
+  UI -- "GET exchange pairs etc" --> API
+  API -- "Optional cache read" --> RD
+  API -- "SQL aggregates joins cache miss" --> PG
+  PG -- "Rows" --> API
+  API -- "Populate cache when used" --> RD
+  API -- "JSON payload" --> UI`
 
-const indexerIngest = `sequenceDiagram
-  participant RPC as Ethereum node
-  participant CO as Coordinator
-  participant CH as blockCh
-  participant W as Workers
-  participant PG as PostgreSQL
-  loop Live and catch-up
-    RPC-->>CO: newHeads WS or head poll
-    CO->>RPC: eth_getBlockByNumber
-    CO->>CH: enqueue block number
-  end
-  CH-->>W: block job
-  W->>PG: Save block txs logs txn
-  W->>PG: Update indexer_state`
+const indexerIngest = `flowchart TB
+  RPC[Ethereum node]
+  CO[Coordinator]
+  CH[[blockCh]]
+  W[Workers]
+  PG[(PostgreSQL)]
+  
+  RPC -- "newHeads WS or head poll" --> CO
+  CO -- "eth_getBlockByNumber" --> RPC
+  CO -- "enqueue block number" --> CH
+  CH -- "block job" --> W
+  W -- "Save block txs logs txn" --> PG
+  W -- "Update indexer_state" --> PG`
 
 export function Flows() {
   return (

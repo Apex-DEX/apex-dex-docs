@@ -54,14 +54,7 @@ export function IndexerDocs() {
         githubUrl={APEX_CONFIG.links.github.indexer}
       />
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-bold text-white">Why it exists</h2>
-        <p>
-          The legacy in-process NestJS poller fetched work sequentially on a fixed interval without RPC failover. The Go service
-          replaces that with parallel ingestion, exponential backoff around RPC faults, and explicit checkpointing so operators can
-          restart without manual cursor management.
-        </p>
-      </section>
+
 
       <section className="space-y-4">
         <h2 className="text-2xl font-bold text-white">Runtime pipeline</h2>
