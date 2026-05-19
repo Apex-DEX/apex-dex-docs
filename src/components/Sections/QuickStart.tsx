@@ -1,24 +1,40 @@
-import { useState } from 'react'
-import { Terminal, Code2, Play, CheckCircle2, Copy, Zap, Activity, Database } from 'lucide-react'
-import { SectionHeader } from '../ui/SectionHeader'
-import { APEX_CONFIG } from '../../config'
+import { useState } from "react";
+import {
+  Terminal,
+  Code2,
+  Play,
+  CheckCircle2,
+  Copy,
+  Zap,
+  Activity,
+  Database,
+} from "lucide-react";
+import { SectionHeader } from "../ui/SectionHeader";
+import { APEX_CONFIG } from "../../config";
 
 const stepShell: Record<string, { box: string; icon: string }> = {
-  blue: { box: 'bg-blue-500/10 border-blue-500/25', icon: 'text-blue-400' },
-  pink: { box: 'bg-pink-500/10 border-pink-500/25', icon: 'text-pink-400' },
-  amber: { box: 'bg-amber-500/10 border-amber-500/25', icon: 'text-amber-400' },
-  emerald: { box: 'bg-emerald-500/10 border-emerald-500/25', icon: 'text-emerald-400' },
-  violet: { box: 'bg-violet-500/10 border-violet-500/25', icon: 'text-violet-400' },
-}
+  blue: { box: "bg-blue-500/10 border-blue-500/25", icon: "text-blue-400" },
+  pink: { box: "bg-pink-500/10 border-pink-500/25", icon: "text-pink-400" },
+  amber: { box: "bg-amber-500/10 border-amber-500/25", icon: "text-amber-400" },
+  emerald: {
+    box: "bg-emerald-500/10 border-emerald-500/25",
+    icon: "text-emerald-400",
+  },
+  violet: {
+    box: "bg-violet-500/10 border-violet-500/25",
+    icon: "text-violet-400",
+  },
+};
 
 export function QuickStart() {
-  const [copiedStep, setCopiedStep] = useState<number | null>(null)
+  const [copiedStep, setCopiedStep] = useState<number | null>(null);
 
   const steps = [
     {
       id: 1,
-      title: 'Clone the repositories',
-      description: 'Workspaces stay independent so contracts, indexer, API, and UI can version separately.',
+      title: "Clone the repositories",
+      description:
+        "Workspaces stay independent so contracts, indexer, API, and UI can version separately.",
       commands: [
         `git clone ${APEX_CONFIG.links.github.contracts}`,
         `git clone ${APEX_CONFIG.links.github.backend}`,
@@ -26,67 +42,77 @@ export function QuickStart() {
         `git clone ${APEX_CONFIG.links.github.frontend}`,
       ],
       icon: Code2,
-      color: 'blue' as const,
+      color: "blue" as const,
     },
     {
       id: 2,
-      title: 'Start PostgreSQL and Redis',
-      description: 'Use your compose file or managed services; both the API and indexer expect reachable hosts.',
-      commands: ['docker compose up -d postgres redis', '# or: docker-compose up -d postgres redis'],
+      title: "Start PostgreSQL and Redis",
+      description:
+        "Use your compose file or managed services; both the API and indexer expect reachable hosts.",
+      commands: [
+        "docker compose up -d postgres redis",
+        "# or: docker-compose up -d postgres redis",
+      ],
       icon: Activity,
-      color: 'pink' as const,
+      color: "pink" as const,
     },
     {
       id: 3,
-      title: 'Configure environment files',
-      description: 'Copy backend and indexer examples, then align DB name, credentials, Redis URL, and RPC endpoints.',
+      title: "Configure environment files",
+      description:
+        "Copy backend and indexer examples, then align DB name, credentials, Redis URL, and RPC endpoints.",
       commands: [
-        'cd apex-dex-backend && cp .env.example .env',
-        'cd apex-dex-indexer && cp .env.example .env  # if provided',
-        'cp config/config.example.yml config/config.local.yml   # indexer',
+        "cd apex-dex-backend && cp .env.example .env",
+        "cd apex-dex-indexer && cp .env.example .env  # if provided",
       ],
       icon: Terminal,
-      color: 'amber' as const,
+      color: "amber" as const,
     },
     {
       id: 4,
-      title: 'Run database migrations (backend)',
-      description: 'Migrations create raw ingestion tables and indexer_state consumed by the Go service.',
+      title: "Run database migrations (backend)",
+      description:
+        "Migrations create raw ingestion tables and indexer_state consumed by the Go service.",
       commands: [
-        'cd apex-dex-backend',
-        'yarn migration:run',
-        '# when schema changes:',
-        '# yarn migration:generate src/modules/database/migrations/<Name>',
+        "cd apex-dex-backend",
+        "yarn migration:run",
+        "# when schema changes:",
+        "# yarn migration:generate src/modules/database/migrations/<Name>",
       ],
       icon: Database,
-      color: 'violet' as const,
+      color: "violet" as const,
     },
     {
       id: 5,
-      title: 'Launch indexer and API',
-      description: 'Start the indexer first if you need historical backfill before hitting API endpoints.',
+      title: "Launch indexer and API",
+      description:
+        "Start the indexer first if you need historical backfill before hitting API endpoints.",
       commands: [
-        'cd apex-dex-indexer && make run   # or: go run ./cmd/indexer',
-        'cd apex-dex-backend && yarn start:dev',
+        "cd apex-dex-indexer && make run   # or: go run ./cmd/indexer",
+        "cd apex-dex-backend && yarn start:dev",
       ],
       icon: Play,
-      color: 'emerald' as const,
+      color: "emerald" as const,
     },
     {
       id: 6,
-      title: 'Launch the frontend',
-      description: 'Point Vite env vars at your local API and Sepolia RPC; connect a funded test wallet.',
-      commands: ['cd apex-dex-interface && cp .env.example .env', 'yarn install && yarn dev'],
+      title: "Launch the frontend",
+      description:
+        "Point Vite env vars at your local API and Sepolia RPC; connect a funded test wallet.",
+      commands: [
+        "cd apex-dex-interface && cp .env.example .env",
+        "yarn install && yarn dev",
+      ],
       icon: Zap,
-      color: 'blue' as const,
+      color: "blue" as const,
     },
-  ]
+  ];
 
   const copyToClipboard = (text: string, id: number) => {
-    void navigator.clipboard.writeText(text)
-    setCopiedStep(id)
-    setTimeout(() => setCopiedStep(null), 2000)
-  }
+    void navigator.clipboard.writeText(text);
+    setCopiedStep(id);
+    setTimeout(() => setCopiedStep(null), 2000);
+  };
 
   return (
     <div className="pb-20">
@@ -99,7 +125,7 @@ export function QuickStart() {
 
       <div className="space-y-8 max-w-4xl">
         {steps.map((step) => {
-          const shell = stepShell[step.color]
+          const shell = stepShell[step.color];
           return (
             <div key={step.id} className="relative group">
               <div className="absolute -left-3 top-0 bottom-0 w-1 rounded-full bg-white/5 group-hover:bg-purple-500/40 transition-colors" />
@@ -113,7 +139,9 @@ export function QuickStart() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <h3 className="text-lg md:text-xl font-bold text-white">
-                        <span className="text-gray-500 font-mono text-sm mr-2">0{step.id}.</span>
+                        <span className="text-gray-500 font-mono text-sm mr-2">
+                          0{step.id}.
+                        </span>
                         {step.title}
                       </h3>
                       {copiedStep === step.id && (
@@ -122,14 +150,18 @@ export function QuickStart() {
                         </span>
                       )}
                     </div>
-                    <p className="text-gray-400 text-sm mb-5">{step.description}</p>
+                    <p className="text-gray-400 text-sm mb-5">
+                      {step.description}
+                    </p>
                     <div className="relative group/code">
                       <pre className="bg-black/50 rounded-xl p-4 font-mono text-xs md:text-sm text-blue-200 border border-white/10 overflow-x-auto whitespace-pre-wrap">
-                        {step.commands.join('\n')}
+                        {step.commands.join("\n")}
                       </pre>
                       <button
                         type="button"
-                        onClick={() => copyToClipboard(step.commands.join('\n'), step.id)}
+                        onClick={() =>
+                          copyToClipboard(step.commands.join("\n"), step.id)
+                        }
                         className="absolute top-3 right-3 p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-gray-400 hover:text-white opacity-0 group-hover/code:opacity-100 transition-opacity"
                         aria-label="Copy commands"
                       >
@@ -140,7 +172,7 @@ export function QuickStart() {
                 </div>
               </div>
             </div>
-          )
+          );
         })}
       </div>
 
@@ -156,11 +188,13 @@ export function QuickStart() {
             Indexer service and tooling (Makefile targets).
           </li>
           <li>
-            <strong className="text-gray-200 block mb-1">Docker (optional)</strong>
+            <strong className="text-gray-200 block mb-1">
+              Docker (optional)
+            </strong>
             Local Postgres/Redis without host installs.
           </li>
         </ul>
       </div>
     </div>
-  )
+  );
 }
